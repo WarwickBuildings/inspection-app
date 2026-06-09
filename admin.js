@@ -30,23 +30,16 @@ const auth = getAuth(app);
 
 onAuthStateChanged(auth, (user) => {
 
-  console.log("AUTH STATE CHANGED");
-  console.log(user);
-
-  const status = document.getElementById("status");
-
   if (!user) {
 
-    status.innerHTML =
-      "NOT LOGGED IN (Firebase user is null)";
+    document.body.innerHTML =
+      "<h1>NOT LOGGED IN</h1><p>Firebase returned user = null</p>";
 
     return;
   }
 
-  status.innerHTML =
-    "LOGGED IN AS: " + user.email;
-
-  loadJobs();
+  document.body.innerHTML =
+    "<h1>LOGGED IN</h1><p>" + user.email + "</p>";
 });
 
 async function loadJobs() {
