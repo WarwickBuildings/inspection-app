@@ -37,13 +37,17 @@ onAuthStateChanged(auth, (user) => {
 
   if (!user) {
 
-    document.body.innerHTML =
-      "<h1>Not logged in</h1>";
+    document.body.innerHTML = `
+      <h1>Not logged in</h1>
+      <p>Firebase returned user = null</p>
+    `;
 
   } else {
 
-    document.body.innerHTML =
-      "<h1>Logged in as " + user.email + "</h1>";
+    document.body.innerHTML = `
+      <h1>Logged in</h1>
+      <p>${user.email}</p>
+    `;
 
   }
 });
