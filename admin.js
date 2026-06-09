@@ -1,27 +1,26 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-app.js";
-import {
-  getFirestore,
-  collection,
-  addDoc,
-  getDocs,
-  updateDoc,
-  deleteDoc,
-  doc
+import { 
+  getFirestore, collection, addDoc, getDocs, updateDoc, deleteDoc, doc 
 } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore.js";
 
-import {
-  getAuth,
-  onAuthStateChanged
+import { 
+  getAuth, onAuthStateChanged 
 } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-auth.js";
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
-const auth = getAuth(app);
+const auth = getAuth(app);   
+
+console.log("🔥 Admin JS loaded");
 
 onAuthStateChanged(auth, (user) => {
+  console.log("🔐 Auth state:", user);
+
   if (!user) {
+    console.log("❌ Not logged in → redirecting");
     window.location.href = "login.html";
   } else {
+    console.log("✅ Logged in → loading jobs");
     loadJobs();
   }
 });
