@@ -22,6 +22,7 @@ window.createJob = async function () {
 
   const jobNumber = document.getElementById("jobNumber").value;
   const customer = document.getElementById("customer").value;
+  const address = document.getElementById("address").value;
   const jobType = document.getElementById("jobType").value;
   const formUrl = document.getElementById("formUrl").value;
 
@@ -31,6 +32,7 @@ window.createJob = async function () {
     await addDoc(collection(db, "jobs"), {
       jobNumber,
       customer,
+      address,
       jobType,
       formUrl,
       created: new Date()
