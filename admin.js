@@ -28,74 +28,79 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
 
-console.log("🔥 Admin JS loaded");
-
 onAuthStateChanged(auth, (user) => {
-
-  console.log("Auth state changed");
-  console.log(user);
-
   if (!user) {
-
-    document.body.innerHTML = `
-      <h1>Not logged in</h1>
-      <p>Firebase returned user = null</p>
-    `;
-
-  } else {
-
-    document.body.innerHTML = `
-      <h1>Logged in</h1>
-      <p>${user.email}</p>
-    `;
-
+    window.location.href = "login.html";
+    return;
   }
+
+  loadJobs();
 });
 
 async function loadJobs() {
 
-  const snapshot = await getDocs(collection(db, "jobs"));
-
   const container = document.getElementById("jobList");
+
+  if (!container) return;
+
   container.innerHTML = "";
 
-  snapshot.forEach((d) => {
+  try {
 
-    const job = d.data();
+    const snapshot = await getDocs(collection(db, "jobs"));
 
-    const div = document.createElement("div");
-    div.className = "job";
+    snapshot.forEach((d) => {
 
-    div.innerHTML = `
-      <strong>${job.jobNumber}</strong><br>
-      ${job.customer} - ${job.jobType}<br>
-      ${job.address || ""}<br>
-      Status: ${job.status || "pending"}<br><br>
-    `;
+      const job = d.data();
 
-    // Mark complete button
-    const completeBtn = document.createElement("button");
-    completeBtn.innerText = "Mark Complete";
-    completeBtn.onclick = async () => {
-      await updateDoc(doc(db, "jobs", d.id), {
-        status: "complete"
-      });
-      loadJobs();
-    };
+      const div = document.createElement("div");
+      div.className = "job";
 
-    // Delete button
-    const deleteBtn = document.createElement("button");
-    deleteBtn.innerText = "Delete";
-    deleteBtn.onclick = async () => {
-      await deleteDoc(doc(db, "jobs", d.id));
-      loadJobs();
-    };
+      div.innerHTML = `
+        <strong>${job.jobNumber || ""}</strong><br>
+        ${job.customer || ""} - ${job.jobType || ""}<br>
+        ${job.address || ""}<br>
+        Status: ${job.status || "pending"}<br><br>
+      `;
 
-    div.appendChild(completeBtn);
-    div.appendChild(deleteBtn);
+      const completeBtn = document.createElement("button");
+      completeBtn.innerText = "Mark Complete";
 
-    container.appendChild(div);
-  });
+      completeBtn.onclick = async () => {
+
+        await updateDoc(doc(db, "jobs", d.id), {
+          status: "complete"
+        });
+
+        loadJobs();
+      };
+
+      const deleteBtn = document.createElement("button");
+      deleteBtn.innerText = "Delete";
+
+      deleteBtn.onclick = async () => {
+
+        if (!confirm("Delete this job?")) return;
+
+        await deleteDoc(doc(db, "jobs", d.id));
+
+        loadJobs();
+      };
+
+      div.appendChild(completeBtn);
+      div.appendChild(document.createTextNode(" "));
+      div.appendChild(deleteBtn);
+
+      container.appendChild(div);
+    });
+
+  } catch (error) {
+
+    console.error(error);
+
+    container.innerHTML =
+      "<p>Error loading jobs.</p>";
+  }
 }
 
 window.createJob = async function () {
@@ -109,12 +114,14 @@ window.createJob = async function () {
   const statusEl = document.getElementById("status");
 
   try {
+
     await addDoc(collection(db, "jobs"), {
       jobNumber,
       customer,
       address,
       jobType,
       formUrl,
+      status: "pending",
       created: new Date()
     });
 
@@ -122,10 +129,15 @@ window.createJob = async function () {
 
     document.getElementById("jobNumber").value = "";
     document.getElementById("customer").value = "";
+    document.getElementById("address").value = "";
     document.getElementById("formUrl").value = "";
 
+    loadJobs();
+
   } catch (e) {
+
     console.error(e);
+
     statusEl.innerText = "Error creating job";
   }
 };
