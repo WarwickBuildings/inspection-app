@@ -31,25 +31,28 @@ async function loadJobs() {
 
     querySnapshot.forEach((doc) => {
 
-        const job = doc.data();
+    const job = doc.data();
 
-        const card = document.createElement("div");
+    // HIDE completed jobs (you can change this later)
+    if (job.status === "complete") return;
 
-        card.className = "job";
+    const card = document.createElement("div");
+    card.className = "job";
 
-        card.innerHTML = `
-            <strong>${job.jobNumber}</strong><br>
-            ${job.customer}<br>
-            ${job.jobType}
-        `;
+    card.innerHTML = `
+        <strong>${job.jobNumber}</strong><br>
+        ${job.customer}<br>
+        ${job.jobType}<br>
+        <small>${job.address || ""}</small><br>
+        <small>Status: ${job.status || "pending"}</small>
+    `;
 
-        card.addEventListener("click", () => {
-            window.open(job.formUrl, "_blank");
-        });
-
-        jobsDiv.appendChild(card);
-
+    card.addEventListener("click", () => {
+        window.open(job.formUrl, "_blank");
     });
+
+    jobsDiv.appendChild(card);
+});
 }
 
 loadJobs();

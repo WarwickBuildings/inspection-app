@@ -3,7 +3,11 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/12.14.0/fireba
 import {
   getFirestore,
   collection,
-  addDoc
+  addDoc,
+  getDocs,
+  updateDoc,
+  deleteDoc,
+  doc
 } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -17,6 +21,52 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
+
+async function loadJobs() {
+
+  const snapshot = await getDocs(collection(db, "jobs"));
+
+  const container = document.getElementById("jobList");
+  container.innerHTML = "";
+
+  snapshot.forEach((d) => {
+
+    const job = d.data();
+
+    const div = document.createElement("div");
+    div.className = "job";
+
+    div.innerHTML = `
+      <strong>${job.jobNumber}</strong><br>
+      ${job.customer} - ${job.jobType}<br>
+      ${job.address || ""}<br>
+      Status: ${job.status || "pending"}<br><br>
+    `;
+
+    // Mark complete button
+    const completeBtn = document.createElement("button");
+    completeBtn.innerText = "Mark Complete";
+    completeBtn.onclick = async () => {
+      await updateDoc(doc(db, "jobs", d.id), {
+        status: "complete"
+      });
+      loadJobs();
+    };
+
+    // Delete button
+    const deleteBtn = document.createElement("button");
+    deleteBtn.innerText = "Delete";
+    deleteBtn.onclick = async () => {
+      await deleteDoc(doc(db, "jobs", d.id));
+      loadJobs();
+    };
+
+    div.appendChild(completeBtn);
+    div.appendChild(deleteBtn);
+
+    container.appendChild(div);
+  });
+}
 
 window.createJob = async function () {
 
@@ -49,3 +99,5 @@ window.createJob = async function () {
     statusEl.innerText = "Error creating job";
   }
 };
+
+loadJobs();
