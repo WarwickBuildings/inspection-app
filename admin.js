@@ -3,11 +3,13 @@ import {
   onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-auth.js";
 
-const auth = getAuth();
+const auth = getAuth(app);
 
 onAuthStateChanged(auth, (user) => {
   if (!user) {
     window.location.href = "login.html";
+  } else {
+    loadJobs();
   }
 });
 
@@ -112,5 +114,3 @@ window.createJob = async function () {
     statusEl.innerText = "Error creating job";
   }
 };
-
-loadJobs();
