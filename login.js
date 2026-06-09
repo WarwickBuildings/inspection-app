@@ -30,7 +30,7 @@ window.login = async function () {
 
     console.log("LOGIN SUCCESS");
 
-    window.location.href = "admin.html";
+    alert("LOGIN SUCCESS");
 
   } catch (error) {
 
