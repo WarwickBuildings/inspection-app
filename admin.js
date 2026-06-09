@@ -31,15 +31,11 @@ const auth = getAuth(app);
 onAuthStateChanged(auth, (user) => {
 
   if (!user) {
-
-    document.body.innerHTML =
-      "<h1>NOT LOGGED IN</h1><p>Firebase returned user = null</p>";
-
+    window.location.href = "login.html";
     return;
   }
 
-  document.body.innerHTML =
-    "<h1>LOGGED IN</h1><p>" + user.email + "</p>";
+  loadJobs();
 });
 
 async function loadJobs() {
