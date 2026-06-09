@@ -1,7 +1,7 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-app.js";
-import {
-  getAuth,
-  signInWithEmailAndPassword
+import { 
+  getAuth, 
+  signInWithEmailAndPassword 
 } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-auth.js";
 
 const firebaseConfig = {
@@ -16,15 +16,23 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 
+// 👇 THIS IS THE CRITICAL FIX
 window.login = async function () {
 
   const email = document.getElementById("email").value;
   const password = document.getElementById("password").value;
 
+  console.log("Trying login...", email);
+
   try {
     await signInWithEmailAndPassword(auth, email, password);
+
+    console.log("LOGIN SUCCESS");
+
     window.location.href = "admin.html";
-  } catch (e) {
-    document.getElementById("status").innerText = "Login failed";
+
+  } catch (error) {
+    console.error("LOGIN ERROR:", error.message);
+    document.getElementById("status").innerText = error.message;
   }
 };
