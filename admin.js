@@ -16,7 +16,7 @@ import {
 } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-auth.js";
 
 const firebaseConfig = {
-  apiKey: "...",
+  apiKey: "AIzaSyDxzI-4C04LvHKj-g99pNr0UPiQuRs-RY0",
   authDomain: "base-checks-8057f.firebaseapp.com",
   projectId: "base-checks-8057f",
   storageBucket: "base-checks-8057f.firebasestorage.app",
@@ -31,12 +31,20 @@ const auth = getAuth(app);
 console.log("🔥 Admin JS loaded");
 
 onAuthStateChanged(auth, (user) => {
-  console.log("🔐 Auth state:", user);
+
+  console.log("Auth state changed");
+  console.log(user);
 
   if (!user) {
-    window.location.href = "login.html";
+
+    document.body.innerHTML =
+      "<h1>Not logged in</h1>";
+
   } else {
-    loadJobs();
+
+    document.body.innerHTML =
+      "<h1>Logged in as " + user.email + "</h1>";
+
   }
 });
 
