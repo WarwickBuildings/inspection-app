@@ -19,10 +19,12 @@ const auth = getAuth(app);
 
 window.login = async function () {
 
-  const email = document.getElementById("email").value;
+  const email = document.getElementById("email").value.trim();
   const password = document.getElementById("password").value;
 
-  console.log("Trying login...", email);
+  const statusEl = document.getElementById("status");
+
+  statusEl.innerText = "";
 
   try {
 
@@ -30,13 +32,13 @@ window.login = async function () {
 
     console.log("LOGIN SUCCESS");
 
-    alert("LOGIN SUCCESS");
+    window.location.href = "admin.html";
 
   } catch (error) {
 
-    console.error("LOGIN ERROR:", error.message);
+    console.error("LOGIN ERROR:", error);
 
-    document.getElementById("status").innerText =
-      error.message;
+    statusEl.innerText =
+      "Login failed: " + error.message;
   }
 };
