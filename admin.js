@@ -29,10 +29,22 @@ const db = getFirestore(app);
 const auth = getAuth(app);
 
 onAuthStateChanged(auth, (user) => {
+
+  console.log("AUTH STATE CHANGED");
+  console.log(user);
+
+  const status = document.getElementById("status");
+
   if (!user) {
-    window.location.href = "login.html";
+
+    status.innerHTML =
+      "NOT LOGGED IN (Firebase user is null)";
+
     return;
   }
+
+  status.innerHTML =
+    "LOGGED IN AS: " + user.email;
 
   loadJobs();
 });
