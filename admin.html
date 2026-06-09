@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>Admin - Create Jobs</title>
+
+<link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<h1>Create Job</h1>
+
+<div class="form">
+
+  <input id="jobNumber" placeholder="Job Number (e.g. G001)">
+  <input id="customer" placeholder="Customer Name">
+  <select id="jobType">
+    <option value="Garage">Garage</option>
+    <option value="Office">Office</option>
+    <option value="Ground Screw Base">Ground Screw Base</option>
+  </select>
+
+  <input id="formUrl" placeholder="Tally Form URL">
+
+  <button onclick="createJob()">Create Job</button>
+
+</div>
+
+<p id="status"></p>
+
+<script type="module" src="admin.js"></script>
+
+</body>
+</html>
