@@ -1,31 +1,4 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-app.js";
-import { 
-  getFirestore, collection, addDoc, getDocs, updateDoc, deleteDoc, doc 
-} from "https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore.js";
-
-import { 
-  getAuth, onAuthStateChanged 
-} from "https://www.gstatic.com/firebasejs/12.14.0/firebase-auth.js";
-
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-const auth = getAuth(app);   
-
-console.log("🔥 Admin JS loaded");
-
-onAuthStateChanged(auth, (user) => {
-  console.log("🔐 Auth state:", user);
-
-  if (!user) {
-    console.log("❌ Not logged in → redirecting");
-    window.location.href = "login.html";
-  } else {
-    console.log("✅ Logged in → loading jobs");
-    loadJobs();
-  }
-});
-
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-app.js";
 
 import {
   getFirestore,
@@ -37,8 +10,13 @@ import {
   doc
 } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore.js";
 
+import {
+  getAuth,
+  onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/12.14.0/firebase-auth.js";
+
 const firebaseConfig = {
-  apiKey: "AIzaSyDxzI-4C04LvHKj-g99pNr0UPiQuRs-RY0",
+  apiKey: "...",
   authDomain: "base-checks-8057f.firebaseapp.com",
   projectId: "base-checks-8057f",
   storageBucket: "base-checks-8057f.firebasestorage.app",
@@ -48,6 +26,19 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
+const auth = getAuth(app);
+
+console.log("🔥 Admin JS loaded");
+
+onAuthStateChanged(auth, (user) => {
+  console.log("🔐 Auth state:", user);
+
+  if (!user) {
+    window.location.href = "login.html";
+  } else {
+    loadJobs();
+  }
+});
 
 async function loadJobs() {
 
