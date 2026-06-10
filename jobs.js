@@ -15,6 +15,8 @@ import {
   signOut
 } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-auth.js";
 
+let currentStaffName = null;
+
 const firebaseConfig = {
   apiKey: "AIzaSyDxzI-4C04LvHKj-g99pNr0UPiQuRs-RY0",
   authDomain: "base-checks-8057f.firebaseapp.com",
@@ -47,7 +49,8 @@ if (!userSnap.exists()) {
 
     const userData = userSnap.data();
 
-    loadJobs(userData.name);
+    currentStaffName = userData.name;
+    loadJobs(currentStaffName);
 
   } catch (error) {
 
@@ -167,4 +170,10 @@ window.logout = async function () {
   await signOut(auth);
 
   window.location.href = "login.html";
+};
+
+window.loadJobs = function () {
+  if (currentStaffName) {
+    loadJobs(currentStaffName);
+  }
 };
