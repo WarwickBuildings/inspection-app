@@ -5,6 +5,12 @@ import {
   signInWithEmailAndPassword
 } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-auth.js";
 
+import {
+  getFirestore,
+  doc,
+  getDoc
+} from "https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore.js";
+
 const firebaseConfig = {
   apiKey: "AIzaSyDxzI-4C04LvHKj-g99pNr0UPiQuRs-RY0",
   authDomain: "base-checks-8057f.firebaseapp.com",
@@ -16,29 +22,46 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
+const db = getFirestore(app);
 
 window.login = async function () {
 
   const email = document.getElementById("email").value.trim();
   const password = document.getElementById("password").value;
-
   const statusEl = document.getElementById("status");
 
   statusEl.innerText = "";
 
   try {
 
-    await signInWithEmailAndPassword(auth, email, password);
+    // 1. Login
+    const userCredential =
+      await signInWithEmailAndPassword(auth, email, password);
 
-    console.log("LOGIN SUCCESS");
+    const user = userCredential.user;
 
-    window.location.href = "admin.html";
+    // 2. Get role from Firestore
+    const userRef = doc(db, "users", user.uid);
+    const userSnap = await getDoc(userRef);
+
+    if (!userSnap.exists()) {
+      statusEl.innerText = "User profile not found";
+      return;
+    }
+
+    const userData = userSnap.data();
+
+    // 3. Redirect based on role
+    if (userData.role === "admin") {
+      window.location.href = "admin.html";
+    } else {
+      window.location.href = "jobs.html";
+    }
 
   } catch (error) {
 
-    console.error("LOGIN ERROR:", error);
+    console.error(error);
 
-    statusEl.innerText =
-      "Login failed: " + error.message;
+    statusEl.innerText = "Login failed: " + error.message;
   }
 };
