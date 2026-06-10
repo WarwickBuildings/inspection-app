@@ -15,8 +15,8 @@ import {
   signOut
 } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-auth.js";
 
-let currentStaffName = null;
 let currentUserUid = null;
+let currentStaffName = null;
 
 const firebaseConfig = {
   apiKey: "AIzaSyDxzI-4C04LvHKj-g99pNr0UPiQuRs-RY0",
@@ -31,6 +31,7 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
 
+// ---------------- AUTH ----------------
 onAuthStateChanged(auth, async (user) => {
 
   if (!user) {
@@ -40,32 +41,28 @@ onAuthStateChanged(auth, async (user) => {
 
   try {
 
-   const userRef = doc(db, "users", user.uid);
+    const userRef = doc(db, "users", user.uid);
+    const userSnap = await getDoc(userRef);
 
-const userSnap = await getDoc(userRef);
+    if (!userSnap.exists()) {
+      alert("User profile not found");
+      return;
+    }
 
-if (!userSnap.exists()) {
-  return;
-}
+    const userData = userSnap.data();
 
-  const userData = userSnap.data();
+    currentUserUid = user.uid;
+    currentStaffName = userData.name;
 
-currentUserUid = user.uid;
-currentStaffName = userData.name;
-
-loadJobs(currentUserUid);
+    loadJobs();
 
   } catch (error) {
-
-  console.error(error);
-
-  alert(
-    "Error loading user profile:\n\n" +
-    error.message
-  );
-}
+    console.error(error);
+    alert("Error loading user profile: " + error.message);
+  }
 });
 
+// ---------------- LOAD JOBS ----------------
 async function loadJobs() {
 
   const container = document.getElementById("jobList");
@@ -81,36 +78,13 @@ async function loadJobs() {
 
     const job = d.data();
 
-    // 🔐 UID-based filtering
+    // 🔐 UID FILTER (CORE FIX)
     if (job.assignedToUid !== currentUserUid) {
       return;
     }
 
-    // 🔥 hide completed unless checkbox is ticked
+    // 🔥 hide completed unless checkbox ticked
     if (!showCompleted && job.status === "complete") {
-      return;
-    }
-
-    const div = document.createElement("div");
-    div.className = "job";
-
-    div.innerHTML = `
-      <h3>${job.jobNumber}</h3>
-      <p>${job.customer}</p>
-      <p>${job.address || ""}</p>
-      <p>Status: ${job.status || "pending"}</p>
-    `;
-
-    container.appendChild(div);
-  });
-}
-
-if (!showCompleted && job.status === "complete") {
-  return;
-}
-
-    // Only show jobs assigned to this user
-    if (job.assignedTo !== staffName) {
       return;
     }
 
@@ -133,19 +107,17 @@ if (!showCompleted && job.status === "complete") {
 
       <br><br>
 
-<p>
-  <label>
-    <input
-      type="checkbox"
-      ${job.status === "complete" ? "checked" : ""}
-      onchange="toggleComplete('${d.id}', this.checked)"
-    >
-    Inspection Complete
-  </label>
-</p>
+      <p>
+        <label>
+          <input type="checkbox"
+            ${job.status === "complete" ? "checked" : ""}
+            onchange="toggleComplete('${d.id}', this.checked)">
+          Inspection Complete
+        </label>
+      </p>
 
       <button onclick="startJourney('${d.id}', '${mapsLink}')">
-      Open in Google Maps
+        Open in Google Maps
       </button>
     `;
 
@@ -153,49 +125,31 @@ if (!showCompleted && job.status === "complete") {
   });
 }
 
+// ---------------- ACTIONS ----------------
 window.startJourney = async function(jobId, mapsLink) {
 
-  try {
+  await updateDoc(doc(db, "jobs", jobId), {
+    status: "travelling"
+  });
 
-    await updateDoc(doc(db, "jobs", jobId), {
-      status: "travelling"
-    });
-
-    window.open(mapsLink, "_blank");
-
-    location.reload();
-
-  } catch (error) {
-
-    console.error(error);
-  }
+  window.open(mapsLink, "_blank");
+  loadJobs();
 };
 
 window.toggleComplete = async function(jobId, checked) {
 
-  try {
+  await updateDoc(doc(db, "jobs", jobId), {
+    status: checked ? "complete" : "pending"
+  });
 
-    await updateDoc(doc(db, "jobs", jobId), {
-      status: checked ? "complete" : "pending"
-    });
-
-    location.reload();
-
-  } catch (error) {
-
-    console.error(error);
-  }
+  loadJobs();
 };
 
+// ---------------- LOGOUT ----------------
 window.logout = async function () {
-
   await signOut(auth);
-
   window.location.href = "login.html";
 };
 
-window.loadJobs = function () {
-  if (currentStaffName) {
-    loadJobs(currentStaffName);
-  }
-};
+// ---------------- GLOBAL REFRESH ----------------
+window.loadJobs = loadJobs;
