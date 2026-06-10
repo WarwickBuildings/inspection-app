@@ -36,13 +36,17 @@ onAuthStateChanged(auth, async (user) => {
 
   try {
 
-    const userRef = doc(db, "users", user.uid);
-    const userSnap = await getDoc(userRef);
+   const userRef = doc(db, "users", user.uid);
 
-    if (!userSnap.exists()) {
-      alert("User profile not found");
-      return;
-    }
+alert("Looking for UID: " + user.uid);
+
+const userSnap = await getDoc(userRef);
+
+alert("Document exists: " + userSnap.exists());
+
+if (!userSnap.exists()) {
+  return;
+}
 
     const userData = userSnap.data();
 
