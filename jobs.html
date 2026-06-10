@@ -12,6 +12,13 @@
 
 <button onclick="logout()">Logout</button>
 
+<label>
+  <input type="checkbox" id="showCompleted" onchange="loadJobs()">
+  Show completed jobs
+</label>
+
+<br><br>
+  
 <div id="jobList"></div>
 
 <script type="module" src="jobs.js"></script>
