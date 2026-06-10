@@ -96,30 +96,49 @@ async function loadJobs() {
       encodeURIComponent(job.address || "");
 
     div.innerHTML = `
-      <h3>${job.jobNumber || ""}</h3>
-      <p>${job.customer || ""}</p>
-      <p>${job.address || ""}</p>
-      <p>Status: ${job.status || "pending"}</p>
+  <h3>${job.jobNumber || ""}</h3>
 
-      <a href="${job.formUrl || "#"}" target="_blank">
-        Open Inspection Form
-      </a>
+  <p>${job.customer || ""}</p>
 
-      <br><br>
+  <p>${job.address || ""}</p>
 
-      <p>
-        <label>
-          <input type="checkbox"
-            ${job.status === "complete" ? "checked" : ""}
-            onchange="toggleComplete('${d.id}', this.checked)">
-          Inspection Complete
-        </label>
-      </p>
+  <p>Status: ${job.status || "pending"}</p>
+`;
 
-      <button onclick="startJourney('${d.id}', '${mapsLink}')">
-        Open in Google Maps
-      </button>
-    `;
+if (job.jobType === "Repair") {
+
+  div.innerHTML += `
+    <p><strong>Repair Instructions:</strong></p>
+
+    <p>${job.repairDetails || "No instructions provided"}</p>
+  `;
+
+} else {
+
+  div.innerHTML += `
+    <a href="${job.formUrl || "#"}" target="_blank">
+      Open Inspection Form
+    </a>
+  `;
+}
+
+div.innerHTML += `
+
+  <br><br>
+
+  <p>
+    <label>
+      <input type="checkbox"
+        ${job.status === "complete" ? "checked" : ""}
+        onchange="toggleComplete('${d.id}', this.checked)">
+      Inspection Complete
+    </label>
+  </p>
+
+  <button onclick="startJourney('${d.id}', '${mapsLink}')">
+    Open in Google Maps
+  </button>
+`;
 
     container.appendChild(div);
   });
