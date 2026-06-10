@@ -74,6 +74,16 @@ async function loadJobs(staffName) {
 
     const job = d.data();
 
+    const showCompleted = document.getElementById("showCompleted")?.checked;
+
+if (job.assignedTo !== staffName) {
+  return;
+}
+
+if (!showCompleted && job.status === "complete") {
+  return;
+}
+
     // Only show jobs assigned to this user
     if (job.assignedTo !== staffName) {
       return;
