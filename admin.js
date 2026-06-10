@@ -30,24 +30,6 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
 
-document.addEventListener("DOMContentLoaded", () => {
-
-  const jobType = document.getElementById("jobType");
-  const repairSection = document.getElementById("repairSection");
-
-  if (!jobType || !repairSection) return;
-
-  jobType.addEventListener("change", () => {
-
-    if (jobType.value === "Repair") {
-      repairSection.style.display = "block";
-    } else {
-      repairSection.style.display = "none";
-    }
-
-  });
-
-});
 
 // -------------------- FORM TEMPLATES --------------------
 const formTemplates = {
@@ -157,16 +139,40 @@ async function loadJobs() {
 }
 
 // -------------------- AUTO FORM TEMPLATE --------------------
-document.getElementById("jobType")?.addEventListener("change", function () {
+document.addEventListener("DOMContentLoaded", () => {
 
-  const selectedType = this.value;
-  const urlField = document.getElementById("formUrl");
+  const jobType = document.getElementById("jobType");
+  const repairSection = document.getElementById("repairSection");
+  const formUrl = document.getElementById("formUrl");
 
-  if (formTemplates[selectedType]) {
-    urlField.value = formTemplates[selectedType];
-  } else {
-    urlField.value = "";
+  if (!jobType) return;
+
+  function updateJobTypeUI() {
+
+    const selectedType = jobType.value;
+
+    if (selectedType === "Repair") {
+
+      repairSection.style.display = "block";
+      formUrl.style.display = "none";
+      formUrl.value = "";
+
+    } else {
+
+      repairSection.style.display = "none";
+      formUrl.style.display = "block";
+
+      if (formTemplates[selectedType]) {
+        formUrl.value = formTemplates[selectedType];
+      } else {
+        formUrl.value = "";
+      }
+    }
   }
+
+  jobType.addEventListener("change", updateJobTypeUI);
+
+  updateJobTypeUI();
 });
 
 // -------------------- CREATE JOB --------------------
