@@ -38,24 +38,13 @@ onAuthStateChanged(auth, async (user) => {
 
    const userRef = doc(db, "users", user.uid);
 
-alert("Looking for UID: " + user.uid);
-
 const userSnap = await getDoc(userRef);
-
-alert("Document exists: " + userSnap.exists());
 
 if (!userSnap.exists()) {
   return;
 }
 
     const userData = userSnap.data();
-
-    alert(
-      "Logged in as: " +
-      user.email +
-      "\nName: " +
-      userData.name
-    );
 
     loadJobs(userData.name);
 
