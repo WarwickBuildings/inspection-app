@@ -30,6 +30,25 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
 
+document.addEventListener("DOMContentLoaded", () => {
+
+  const jobType = document.getElementById("jobType");
+  const repairSection = document.getElementById("repairSection");
+
+  if (!jobType || !repairSection) return;
+
+  jobType.addEventListener("change", () => {
+
+    if (jobType.value === "Repair") {
+      repairSection.style.display = "block";
+    } else {
+      repairSection.style.display = "none";
+    }
+
+  });
+
+});
+
 // -------------------- FORM TEMPLATES --------------------
 const formTemplates = {
   "Garage": "https://tally.so/r/44OR5A",
