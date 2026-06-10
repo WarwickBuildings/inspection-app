@@ -34,14 +34,41 @@ const formTemplates = {
   "Ground Screw Base": "https://tally.so/r/b5zXBZ"
 };
 
-onAuthStateChanged(auth, (user) => {
+onAuthStateChanged(auth, async (user) => {
 
   if (!user) {
     window.location.href = "login.html";
     return;
   }
 
-  loadJobs();
+  try {
+
+    const userRef = doc(db, "users", user.uid);
+    const userSnap = await getDoc(userRef);
+
+    if (!userSnap.exists()) {
+      alert("User profile not found");
+      window.location.href = "login.html";
+      return;
+    }
+
+    const userData = userSnap.data();
+
+    // 🔒 ROLE CHECK ADDED HERE
+    if (userData.role !== "admin") {
+      alert("Access denied: Admins only");
+      window.location.href = "jobs.html"; // or login.html if you prefer stricter
+      return;
+    }
+
+    // ✅ Admin allowed
+    loadJobs();
+
+  } catch (error) {
+
+    console.error(error);
+    window.location.href = "login.html";
+  }
 });
 
 async function loadJobs() {
