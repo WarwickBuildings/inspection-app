@@ -16,6 +16,7 @@ import {
 } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-auth.js";
 
 let currentStaffName = null;
+let currentUserUid = null;
 
 const firebaseConfig = {
   apiKey: "AIzaSyDxzI-4C04LvHKj-g99pNr0UPiQuRs-RY0",
@@ -47,10 +48,12 @@ if (!userSnap.exists()) {
   return;
 }
 
-    const userData = userSnap.data();
+  const userData = userSnap.data();
 
-    currentStaffName = userData.name;
-    loadJobs(currentStaffName);
+currentUserUid = user.uid;
+currentStaffName = userData.name;
+
+loadJobs(currentUserUid);
 
   } catch (error) {
 
@@ -63,13 +66,14 @@ if (!userSnap.exists()) {
 }
 });
 
-async function loadJobs(staffName) {
+async function loadJobs() {
 
   const container = document.getElementById("jobList");
-
   if (!container) return;
 
   container.innerHTML = "";
+
+  const showCompleted = document.getElementById("showCompleted")?.checked;
 
   const snapshot = await getDocs(collection(db, "jobs"));
 
@@ -77,10 +81,28 @@ async function loadJobs(staffName) {
 
     const job = d.data();
 
-    const showCompleted = document.getElementById("showCompleted")?.checked;
+    // 🔐 UID-based filtering
+    if (job.assignedToUid !== currentUserUid) {
+      return;
+    }
 
-if (job.assignedTo !== staffName) {
-  return;
+    // 🔥 hide completed unless checkbox is ticked
+    if (!showCompleted && job.status === "complete") {
+      return;
+    }
+
+    const div = document.createElement("div");
+    div.className = "job";
+
+    div.innerHTML = `
+      <h3>${job.jobNumber}</h3>
+      <p>${job.customer}</p>
+      <p>${job.address || ""}</p>
+      <p>Status: ${job.status || "pending"}</p>
+    `;
+
+    container.appendChild(div);
+  });
 }
 
 if (!showCompleted && job.status === "complete") {
