@@ -8,7 +8,8 @@ import {
 
 import {
   getAuth,
-  onAuthStateChanged
+  onAuthStateChanged,
+  signOut
 } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-auth.js";
 
 const firebaseConfig = {
@@ -74,3 +75,9 @@ async function loadJobs() {
     container.appendChild(div);
   });
 }
+window.logout = async function () {
+
+  await signOut(auth);
+
+  window.location.href = "login.html";
+};
