@@ -100,7 +100,7 @@ async function loadJobs() {
       div.innerHTML = `
         <strong>${job.jobNumber || ""}</strong><br>
         ${job.customer || ""} - ${job.jobType || ""}<br>
-        Assigned: ${job.assignedToUid || "Unassigned"}<br>
+        Assigned: ${job.assignedToName || "Unassigned"}<br>
         ${job.address || ""}<br>
         Status: ${job.status || "pending"}<br><br>
       `;
@@ -165,15 +165,20 @@ window.createJob = async function () {
   try {
 
     await addDoc(collection(db, "jobs"), {
-      jobNumber,
-      customer,
-      address,
-      jobType,
-      formUrl,
-      assignedToUid,
-      status: "pending",
-      created: new Date()
-    });
+  jobNumber,
+  customer,
+  address,
+  jobType,
+  formUrl,
+
+  assignedToUid,
+  assignedToName: document.getElementById("assignedTo").options[
+    document.getElementById("assignedTo").selectedIndex
+  ].text,
+
+  status: "pending",
+  created: new Date()
+});
 
     statusEl.innerText = "Job created successfully ✔";
 
