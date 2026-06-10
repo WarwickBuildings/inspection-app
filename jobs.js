@@ -27,9 +27,7 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
 
-onAuthStateChanged(auth, (user) => {
-
-  onAuthStateChanged(auth, async (user) => {
+onAuthStateChanged(auth, async (user) => {
 
   if (!user) {
     window.location.href = "login.html";
@@ -46,16 +44,16 @@ onAuthStateChanged(auth, (user) => {
       return;
     }
 
-const userData = userSnap.data();
+    const userData = userSnap.data();
 
-alert(
-  "Logged in as: " +
-  user.email +
-  "\nName: " +
-  userData.name
-);
+    alert(
+      "Logged in as: " +
+      user.email +
+      "\nName: " +
+      userData.name
+    );
 
-loadJobs(userData.name);
+    loadJobs(userData.name);
 
   } catch (error) {
 
@@ -69,6 +67,8 @@ async function loadJobs(staffName) {
 
   const container = document.getElementById("jobList");
 
+  if (!container) return;
+
   container.innerHTML = "";
 
   const snapshot = await getDocs(collection(db, "jobs"));
@@ -77,12 +77,12 @@ async function loadJobs(staffName) {
 
     const job = d.data();
 
+    // Only show jobs assigned to this user
     if (job.assignedTo !== staffName) {
-  return;
-}
-    
-    const div = document.createElement("div");
+      return;
+    }
 
+    const div = document.createElement("div");
     div.className = "job";
 
     const mapsLink =
@@ -90,12 +90,12 @@ async function loadJobs(staffName) {
       encodeURIComponent(job.address || "");
 
     div.innerHTML = `
-      <h3>${job.jobNumber}</h3>
-      <p>${job.customer}</p>
+      <h3>${job.jobNumber || ""}</h3>
+      <p>${job.customer || ""}</p>
       <p>${job.address || ""}</p>
       <p>Status: ${job.status || "pending"}</p>
 
-      <a href="${job.formUrl}" target="_blank">
+      <a href="${job.formUrl || "#"}" target="_blank">
         Open Inspection Form
       </a>
 
@@ -109,6 +109,7 @@ async function loadJobs(staffName) {
     container.appendChild(div);
   });
 }
+
 window.logout = async function () {
 
   await signOut(auth);
