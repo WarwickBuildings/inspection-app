@@ -3,7 +3,9 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/12.14.0/fireba
 import {
   getFirestore,
   collection,
-  getDocs
+  getDocs,
+  doc,
+  getDoc
 } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore.js";
 
 import {
@@ -27,15 +29,36 @@ const auth = getAuth(app);
 
 onAuthStateChanged(auth, (user) => {
 
+  onAuthStateChanged(auth, async (user) => {
+
   if (!user) {
     window.location.href = "login.html";
     return;
   }
 
-  loadJobs();
+  try {
+
+    const userRef = doc(db, "users", user.uid);
+    const userSnap = await getDoc(userRef);
+
+    if (!userSnap.exists()) {
+      alert("User profile not found");
+      return;
+    }
+
+    const userData = userSnap.data();
+
+    loadJobs(userData.name);
+
+  } catch (error) {
+
+    console.error(error);
+
+    alert("Error loading user profile");
+  }
 });
 
-async function loadJobs() {
+async function loadJobs(staffName) {
 
   const container = document.getElementById("jobList");
 
@@ -47,6 +70,10 @@ async function loadJobs() {
 
     const job = d.data();
 
+    if (job.assignedTo !== staffName) {
+  return;
+}
+    
     const div = document.createElement("div");
 
     div.className = "job";
