@@ -5,7 +5,8 @@ import {
   collection,
   getDocs,
   doc,
-  getDoc
+  getDoc,
+  updateDoc
 } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore.js";
 
 import {
@@ -97,14 +98,59 @@ async function loadJobs(staffName) {
 
       <br><br>
 
-      <a href="${mapsLink}" target="_blank">
-        Open in Google Maps
-      </a>
+<p>
+  <label>
+    <input
+      type="checkbox"
+      ${job.status === "complete" ? "checked" : ""}
+      onchange="toggleComplete('${d.id}', this.checked)"
+    >
+    Inspection Complete
+  </label>
+</p>
+
+      <button onclick="startJourney('${d.id}', '${mapsLink}')">
+      Open in Google Maps
+      </button>
     `;
 
     container.appendChild(div);
   });
 }
+
+window.startJourney = async function(jobId, mapsLink) {
+
+  try {
+
+    await updateDoc(doc(db, "jobs", jobId), {
+      status: "travelling"
+    });
+
+    window.open(mapsLink, "_blank");
+
+    location.reload();
+
+  } catch (error) {
+
+    console.error(error);
+  }
+};
+
+window.toggleComplete = async function(jobId, checked) {
+
+  try {
+
+    await updateDoc(doc(db, "jobs", jobId), {
+      status: checked ? "complete" : "pending"
+    });
+
+    location.reload();
+
+  } catch (error) {
+
+    console.error(error);
+  }
+};
 
 window.logout = async function () {
 
