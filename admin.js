@@ -164,16 +164,18 @@ window.createJob = async function () {
 
   try {
 
-    await addDoc(collection(db, "jobs"), {
-      jobNumber,
-      customer,
-      address,
-      jobType,
-      assignedTo,
-      formUrl,
-      status: "pending",
-      created: new Date()
-    });
+   await addDoc(collection(db, "jobs"), {
+  jobNumber,
+  customer,
+  address,
+  jobType,
+  formUrl,
+
+  assignedToUid: document.getElementById("assignedTo").value,
+
+  status: "pending",
+  created: new Date()
+});
 
     statusEl.innerText = "Job created successfully ✔";
 
@@ -212,7 +214,7 @@ async function loadStaffDropdown() {
       if (user.role !== "staff") return;
 
       const option = document.createElement("option");
-      option.value = user.name;
+     option.value = docSnap.id;
       option.textContent = user.name;
 
       select.appendChild(option);
