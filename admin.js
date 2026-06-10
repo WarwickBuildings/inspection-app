@@ -147,9 +147,43 @@ window.createJob = async function () {
     statusEl.innerText = "Error creating job";
   }
 };
+
+async function loadStaffDropdown() {
+
+  const select = document.getElementById("assignedTo");
+
+  if (!select) return;
+
+  select.innerHTML = `<option value="">Unassigned</option>`;
+
+  try {
+
+    const snapshot = await getDocs(collection(db, "users"));
+
+    snapshot.forEach((docSnap) => {
+
+      const user = docSnap.data();
+
+      // Only staff users
+      if (user.role !== "staff") return;
+
+      const option = document.createElement("option");
+      option.value = user.name;
+      option.textContent = user.name;
+
+      select.appendChild(option);
+    });
+
+  } catch (error) {
+
+    console.error("Error loading staff:", error);
+  }
+}
+
 window.logout = async function () {
 
   await signOut(auth);
 
   window.location.href = "login.html";
 };
+loadStaffDropdown();
