@@ -46,9 +46,16 @@ onAuthStateChanged(auth, (user) => {
       return;
     }
 
-    const userData = userSnap.data();
+const userData = userSnap.data();
 
-    loadJobs(userData.name);
+alert(
+  "Logged in as: " +
+  user.email +
+  "\nName: " +
+  userData.name
+);
+
+loadJobs(userData.name);
 
   } catch (error) {
 
