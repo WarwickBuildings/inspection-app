@@ -61,10 +61,13 @@ if (!userSnap.exists()) {
 
   } catch (error) {
 
-    console.error(error);
+  console.error(error);
 
-    alert("Error loading user profile");
-  }
+  alert(
+    "Error loading user profile:\n\n" +
+    error.message
+  );
+}
 });
 
 async function loadJobs(staffName) {
