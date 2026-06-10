@@ -184,6 +184,8 @@ window.createJob = async function () {
   const jobType = document.getElementById("jobType").value;
   const formUrl = document.getElementById("formUrl").value;
   const assignedToUid = document.getElementById("assignedTo").value;
+  const repairDetails =
+  document.getElementById("repairDetails").value;
 
   const statusEl = document.getElementById("status");
 
@@ -195,6 +197,7 @@ window.createJob = async function () {
   address,
   jobType,
   formUrl,
+  repairDetails,
 
   assignedToUid,
   assignedToName: document.getElementById("assignedTo").options[
@@ -211,6 +214,7 @@ window.createJob = async function () {
     document.getElementById("customer").value = "";
     document.getElementById("address").value = "";
     document.getElementById("formUrl").value = "";
+    document.getElementById("repairDetails").value = "";
 
     loadJobs();
 
