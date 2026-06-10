@@ -28,6 +28,11 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
+const formTemplates = {
+  "Garage": "https://tally.so/r/44OR5A",
+  "Office": "https://tally.so/r/obzg51",
+  "Ground Screw Base": "https://tally.so/r/b5zXBZ"
+};
 
 onAuthStateChanged(auth, (user) => {
 
@@ -105,6 +110,18 @@ async function loadJobs() {
       "<p>Error loading jobs.</p>";
   }
 }
+
+document.getElementById("jobType").addEventListener("change", function () {
+
+  const selectedType = this.value;
+  const urlField = document.getElementById("formUrl");
+
+  if (formTemplates[selectedType]) {
+    urlField.value = formTemplates[selectedType];
+  } else {
+    urlField.value = "";
+  }
+});
 
 window.createJob = async function () {
 
