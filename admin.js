@@ -61,6 +61,7 @@ async function loadJobs() {
       div.innerHTML = `
         <strong>${job.jobNumber || ""}</strong><br>
         ${job.customer || ""} - ${job.jobType || ""}<br>
+        Assigned: ${job.assignedTo || "Unassigned"}
         ${job.address || ""}<br>
         Status: ${job.status || "pending"}<br><br>
       `;
@@ -110,6 +111,8 @@ window.createJob = async function () {
   const jobNumber = document.getElementById("jobNumber").value;
   const customer = document.getElementById("customer").value;
   const address = document.getElementById("address").value;
+  const assignedTo =
+  document.getElementById("assignedTo").value;
   const jobType = document.getElementById("jobType").value;
   const formUrl = document.getElementById("formUrl").value;
 
@@ -122,6 +125,7 @@ window.createJob = async function () {
       customer,
       address,
       jobType,
+      assignedTo,
       formUrl,
       status: "pending",
       created: new Date()
