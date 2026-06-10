@@ -191,6 +191,9 @@ window.createJob = async function () {
 
   try {
 
+    console.log("Job Type:", jobType);
+console.log("Repair Details:", repairDetails);
+    
     await addDoc(collection(db, "jobs"), {
   jobNumber,
   customer,
