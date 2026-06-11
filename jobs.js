@@ -98,9 +98,11 @@ const snapshot = await getDocs(q);
     const div = document.createElement("div");
     div.className = "job";
 
-    const mapsLink =
-      "https://www.google.com/maps/search/?api=1&query=" +
-      encodeURIComponent(job.address || "");
+    const destination = encodeURIComponent(job.address || "");
+
+const mapsLink =
+  "https://www.google.com/maps/dir/?api=1&destination=" +
+  destination;
 
     div.innerHTML = `
   <h3>${job.jobNumber || ""}</h3>
@@ -154,9 +156,19 @@ div.innerHTML += `
 // ---------------- ACTIONS ----------------
 window.startJourney = async function(jobId, mapsLink) {
 
-  await updateDoc(doc(db, "jobs", jobId), {
-    status: "travelling"
-  });
+  try {
+
+    await updateDoc(doc(db, "jobs", jobId), {
+      status: "travelling"
+    });
+
+  } catch (error) {
+
+    console.error(error);
+  }
+
+  window.location.href = mapsLink;
+};
 
   window.open(mapsLink, "_blank");
   loadJobs();
