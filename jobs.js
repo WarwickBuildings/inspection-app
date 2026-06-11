@@ -170,10 +170,6 @@ window.startJourney = async function(jobId, mapsLink) {
   window.location.href = mapsLink;
 };
 
-  window.open(mapsLink, "_blank");
-  loadJobs();
-};
-
 window.toggleComplete = async function(jobId, checked) {
 
   await updateDoc(doc(db, "jobs", jobId), {
