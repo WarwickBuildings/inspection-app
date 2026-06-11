@@ -8,7 +8,9 @@ import {
   updateDoc,
   deleteDoc,
   doc,
-  getDoc
+  getDoc, 
+  query,
+  orderBy,
 } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore.js";
 
 import {
@@ -89,7 +91,12 @@ async function loadJobs() {
 
   try {
 
-    const snapshot = await getDocs(collection(db, "jobs"));
+    const q = query(
+  collection(db, "jobs"),
+  orderBy("jobNumber", "asc")
+);
+
+const snapshot = await getDocs(q);
 
     snapshot.forEach((d) => {
 
