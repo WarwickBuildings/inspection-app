@@ -6,7 +6,9 @@ import {
   getDocs,
   doc,
   getDoc,
-  updateDoc
+  updateDoc,
+  query,
+  orderBy
 } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore.js";
 
 import {
@@ -72,7 +74,12 @@ async function loadJobs() {
 
   const showCompleted = document.getElementById("showCompleted")?.checked;
 
-  const snapshot = await getDocs(collection(db, "jobs"));
+  const q = query(
+  collection(db, "jobs"),
+  orderBy("jobNumber", "asc")
+);
+
+const snapshot = await getDocs(q);
 
   snapshot.forEach((d) => {
 
