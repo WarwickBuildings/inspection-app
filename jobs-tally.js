@@ -124,11 +124,16 @@ if (job.jobType === "Repair") {
 
 } else {
 
-  div.innerHTML += `
-    <a href="${job.formUrl || "#"}" target="_blank">
-      Open Inspection Form
-    </a>
-  `;
+ const formLink =
+  `${job.formUrl}` +
+  `?customerName=${encodeURIComponent(job.customer || "")}` +
+  `&customerAddress=${encodeURIComponent(job.address || "")}`;
+
+div.innerHTML += `
+  <a href="${formLink}" target="_blank">
+    Open Inspection Form
+  </a>
+`;
 }
 
 div.innerHTML += `
