@@ -59,8 +59,10 @@ onAuthStateChanged(auth, async (user) => {
     loadJobs();
 
   } catch (error) {
+
     console.error(error);
     alert("Error loading user profile: " + error.message);
+
   }
 });
 
@@ -72,94 +74,103 @@ async function loadJobs() {
 
   container.innerHTML = "";
 
-  const showCompleted = document.getElementById("showCompleted")?.checked;
+  const showCompleted =
+    document.getElementById("showCompleted")?.checked;
 
-  const q = query(
-  collection(db, "jobs"),
-  orderBy("jobNumber", "asc")
-);
+  try {
 
-const snapshot = await getDocs(q);
+    const q = query(
+      collection(db, "jobs"),
+      orderBy("jobNumber", "asc")
+    );
 
-  snapshot.forEach((d) => {
+    const snapshot = await getDocs(q);
 
-    const job = d.data();
+    snapshot.forEach((d) => {
 
-    // 🔐 UID FILTER (CORE FIX)
-    if (job.assignedToUid !== currentUserUid) {
-      return;
-    }
+      const job = d.data();
 
-    // 🔥 hide completed unless checkbox ticked
-    if (!showCompleted && job.status === "complete") {
-      return;
-    }
+      // Only show jobs assigned to current user
+      if (job.assignedToUid !== currentUserUid) {
+        return;
+      }
 
-    const div = document.createElement("div");
-    div.className = "job";
+      // Hide completed unless checkbox ticked
+      if (!showCompleted && job.status === "complete") {
+        return;
+      }
 
-    const destination = encodeURIComponent(job.address || "");
+      const div = document.createElement("div");
+      div.className = "job";
 
-const mapsLink =
-  "https://www.google.com/maps/dir/?api=1&destination=" +
-  destination;
+      const destination =
+        encodeURIComponent(job.address || "");
 
-    div.innerHTML = `
-  <h3>${job.jobNumber || ""}</h3>
+      const mapsLink =
+        "https://www.google.com/maps/dir/?api=1&destination=" +
+        destination;
 
-  <p>${job.customer || ""}</p>
+      div.innerHTML = `
+        <h3>${job.jobNumber || ""}</h3>
 
-  <p>${job.address || ""}</p>
+        <p>${job.customer || ""}</p>
 
-  <p>Status: ${job.status || "pending"}</p>
-`;
+        <p>${job.address || ""}</p>
 
-if (job.jobType === "Repair") {
+        <p>Status: ${job.status || "pending"}</p>
+      `;
 
-  div.innerHTML += `
-    <p><strong>Repair Instructions:</strong></p>
+      // Repair jobs
+      if (job.jobType === "Repair") {
 
-    <p>${job.repairDetails || "No instructions provided"}</p>
-  `;
+        div.innerHTML += `
+          <p><strong>Repair Instructions:</strong></p>
 
-} else {
+          <p>${job.repairDetails || "No instructions provided"}</p>
+        `;
 
- const formLink =
-  `${job.formUrl}` +
-  `?customerName=${encodeURIComponent(job.customer || "")}` +
-  `&customerAddress=${encodeURIComponent(job.address || "")}`;
+      } else {
 
-div.innerHTML += `
-  <a href="${formLink}" target="_blank">
-    window.location.href =
-  `inspection.html?id=${d.id}`;
-  </a>
-`;
+        div.innerHTML += `
+          <button onclick="window.location.href='inspection.html?id=${d.id}'">
+            Open Inspection
+          </button>
+        `;
+      }
+
+      div.innerHTML += `
+
+        <br><br>
+
+        <p>
+          <label>
+            <input
+              type="checkbox"
+              ${job.status === "complete" ? "checked" : ""}
+              onchange="toggleComplete('${d.id}', this.checked)">
+            Inspection Complete
+          </label>
+        </p>
+
+        <button onclick="startJourney('${d.id}', '${mapsLink}')">
+          Open in Google Maps
+        </button>
+      `;
+
+      container.appendChild(div);
+
+    });
+
+  } catch (error) {
+
+    console.error(error);
+
+    container.innerHTML =
+      "<p>Error loading jobs.</p>";
+  }
 }
 
-div.innerHTML += `
-
-  <br><br>
-
-  <p>
-    <label>
-      <input type="checkbox"
-        ${job.status === "complete" ? "checked" : ""}
-        onchange="toggleComplete('${d.id}', this.checked)">
-      Inspection Complete
-    </label>
-  </p>
-
-  <button onclick="startJourney('${d.id}', '${mapsLink}')">
-    Open in Google Maps
-  </button>
-`;
-
-    container.appendChild(div);
-  });
-}
-
-// ---------------- ACTIONS ----------------
+// ---------------- START JOURNEY ----------------
 window.startJourney = async function(jobId, mapsLink) {
 
   try {
@@ -176,18 +187,28 @@ window.startJourney = async function(jobId, mapsLink) {
   window.location.href = mapsLink;
 };
 
+// ---------------- COMPLETE JOB ----------------
 window.toggleComplete = async function(jobId, checked) {
 
-  await updateDoc(doc(db, "jobs", jobId), {
-    status: checked ? "complete" : "pending"
-  });
+  try {
 
-  loadJobs();
+    await updateDoc(doc(db, "jobs", jobId), {
+      status: checked ? "complete" : "pending"
+    });
+
+    loadJobs();
+
+  } catch (error) {
+
+    console.error(error);
+  }
 };
 
 // ---------------- LOGOUT ----------------
 window.logout = async function () {
+
   await signOut(auth);
+
   window.location.href = "login.html";
 };
 
