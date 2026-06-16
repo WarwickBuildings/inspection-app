@@ -1,18 +1,38 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-  ...
+
+  <meta charset="UTF-8">
+
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1">
+
+  <title>Inspection</title>
+
+  <link rel="stylesheet" href="style.css">
+
 </head>
+
 <body>
 
   <h1>Inspection</h1>
 
   <label>
     <input type="checkbox" id="baseLevel">
-    Base level
+    Base Level
   </label>
 
-  <textarea id="notes"></textarea>
+  <br><br>
+
+  <textarea
+    id="notes"
+    placeholder="Inspection notes..."
+    rows="6"
+    style="width:100%;">
+  </textarea>
+
+  <br><br>
 
   <button onclick="saveInspection()">
     Save Inspection
@@ -21,4 +41,5 @@
   <script type="module" src="inspection.js"></script>
 
 </body>
+
 </html>
