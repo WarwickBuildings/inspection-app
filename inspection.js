@@ -1,47 +1,7 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-app.js";
+console.log("inspection page loaded");
 
-import {
-  getFirestore,
-  collection,
-  addDoc,
-  serverTimestamp
-} from "https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore.js";
+window.saveInspection = function () {
 
-const firebaseConfig = {
-  // your existing config
-};
+  alert("Save button works!");
 
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-
-const params = new URLSearchParams(window.location.search);
-
-const jobId = params.get("id");
-
-window.saveInspection = async function () {
-
-  try {
-
-    await addDoc(collection(db, "inspections"), {
-
-      jobId,
-
-      baseLevel:
-        document.getElementById("baseLevel").checked,
-
-      notes:
-        document.getElementById("notes").value,
-
-      created:
-        serverTimestamp()
-    });
-
-    alert("Inspection saved");
-
-  } catch (error) {
-
-    console.error(error);
-
-    alert("Save failed");
-  }
 };
